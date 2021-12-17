@@ -1,0 +1,43 @@
+- name: Ensure dependecies for Ansible and Docker installed
+  apt:
+    name: 
+      - python3-apt
+      - python3-pip
+      - ca-certificates
+      - gnupg
+      - curl
+      - apt-transport-https
+      - software-properties-common
+
+- name: Add Docker GPG key
+  apt_key:
+    url: https://download.docker.com/linux/ubuntu/gpg
+
+- name: Add Docker apt repo
+  apt_repository:
+    repo: deb [arch=amd64] https://download.docker.com/linux/ubuntu {{ansible_distribution_release}} stable
+
+- name: Ensure Docker installed
+  apt:
+    name:
+      - docker-ce
+      - docker-ce-cli 
+      - containerd.io
+
+- name: Install docker-compose & Python Docker SDK
+  pip:
+    name: 
+      - docker-compose
+      - docker
+
+- name: Enable containerd on startup
+  systemd:
+    name: containerd.service
+    state: started
+    enabled: yes
+
+- name: Enable Docker on startup
+  systemd:
+    name: docker.service
+    state: started
+    enabled: yes
