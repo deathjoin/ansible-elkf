@@ -1,0 +1,25 @@
+- name: Pull elkf containers
+  block:
+    - name: "Pull image: ElasticSearch {{ elkf_version }}"
+      docker_image: 
+        name: docker.elastic.co/elasticsearch/elasticsearch
+        tag: "{{ elkf_version }}"
+        source: pull
+    
+    - name: "Pull image: Logstash {{ elkf_version }}"
+      docker_image:
+        name: docker.elastic.co/logstash/logstash
+        tag: "{{ elkf_version }}"
+        source: pull
+    
+    - name: "Pull image: Kibana {{ elkf_version }}"
+      docker_image:
+        name: docker.elastic.co/kibana/kibana
+        tag: "{{ elkf_version }}"
+        source: pull
+    
+    - name: "Pull image: Filebeat {{ elkf_version }}"
+      docker_image:
+        name: docker.elastic.co/beats/filebeat
+        tag: "{{ elkf_version }}"
+        source: pull

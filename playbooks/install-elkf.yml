@@ -1,8 +1,9 @@
 ---
 - name: Check & install elfk
   hosts: all
+  become: yes
 
   roles:
-  - role: prepare_hosts
-    become: yes
+  - prepare_hosts
+  - deploy_elkf
 
