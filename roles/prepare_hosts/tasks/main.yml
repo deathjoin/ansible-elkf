@@ -30,14 +30,11 @@
       - docker-compose
       - docker
 
-- name: Enable containerd on startup
+- name: Enable containerd & Docker on startup
   systemd:
-    name: containerd.service
+    name: "{{ item }}"
     state: started
     enabled: yes
-
-- name: Enable Docker on startup
-  systemd:
-    name: docker.service
-    state: started
-    enabled: yes
+  loop:
+    - containerd.service
+    - docker.service
