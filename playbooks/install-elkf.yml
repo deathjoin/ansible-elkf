@@ -1,0 +1,8 @@
+---
+- name: Check & install elfk
+  hosts: all
+
+  tasks:
+  - name: ping
+    ping:
+
