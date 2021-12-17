@@ -1,25 +1,33 @@
-- name: Pull elkf containers
-  block:
-    - name: "Pull image: ElasticSearch {{ elkf_version }}"
-      docker_image: 
-        name: docker.elastic.co/elasticsearch/elasticsearch
-        tag: "{{ elkf_version }}"
-        source: pull
-    
-    - name: "Pull image: Logstash {{ elkf_version }}"
-      docker_image:
-        name: docker.elastic.co/logstash/logstash
-        tag: "{{ elkf_version }}"
-        source: pull
-    
-    - name: "Pull image: Kibana {{ elkf_version }}"
-      docker_image:
-        name: docker.elastic.co/kibana/kibana
-        tag: "{{ elkf_version }}"
-        source: pull
-    
-    - name: "Pull image: Filebeat {{ elkf_version }}"
-      docker_image:
-        name: docker.elastic.co/beats/filebeat
-        tag: "{{ elkf_version }}"
-        source: pull
+- name: Create docker network for ELKF
+  docker_network:
+    name: "{{ elkf_network_name }}"
+
+- name: "Pull ELKF images: Version {{ elkf_version }}"
+  docker_image:
+    name: "{{ item.image }}"
+    tag: "{{ elkf_version }}"
+    source: pull
+  loop: "{{ elkf_containers }}"
+
+- name: Remove previous ELKF Containers
+  docker_container:
+    name: "{{ item.image.split('/')[-1] }}"
+    state: absent
+  loop: "{{ elkf_containers }}"
+
+- name: Put Kibana config
+  copy:
+    src: kibana.yml
+    dest: /etc/kibana.yml
+
+- name: "Run ELKF Containers: Version {{ elkf_version }}"
+  docker_container:
+    name: "{{ item.image.split('/')[-1] }}"
+    image: "{{ item.image }}:{{ elkf_version }}"
+    ports: "{{ item.ports }}"
+    env: "{{ item.environment }}"
+    networks:
+      - name: "{{ elkf_network_name }}"
+        aliases:
+          - "{{ item.image.split('/')[-1] }}"
+  loop: "{{ elkf_containers }}"
