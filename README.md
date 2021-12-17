@@ -4,6 +4,8 @@ Ansible roles to prepare servers and deploy ELKF Stack on Ubuntu.
 
 Tested with Ansible `2.12`
 
+Ansible Vault password: `vault_pass.txt`
+
 ## Roles
 
 ### prepare_hosts
