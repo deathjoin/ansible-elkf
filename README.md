@@ -2,6 +2,8 @@
 
 Ansible roles to prepare servers and deploy ELKF Stack on Ubuntu.
 
+Tested with Ansible `2.12`
+
 ## Roles
 
 ### prepare_hosts
