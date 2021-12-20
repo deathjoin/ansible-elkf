@@ -3,3 +3,6 @@ all:
     local_ubuntu1:
       ansible_host: 192.168.0.76
       ansible_user: join
+    local_ubuntu2:
+      ansible_host: 192.168.0.73
+      ansible_user: join

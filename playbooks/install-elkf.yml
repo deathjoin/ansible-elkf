@@ -4,6 +4,8 @@
   become: yes
 
   roles:
-  - prepare_hosts
-  - deploy_elkf
+  - role: prepare_hosts
+    tags: prepare
+  - role: deploy_elkf
+    tags: deploy
 

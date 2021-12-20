@@ -1,4 +1,4 @@
-- name: Ensure dependecies for Ansible and Docker installed
+- name: Ensure dependencies for Ansible and Docker installed
   apt:
     name: 
       - python3-apt
