@@ -20,15 +20,15 @@
 - name: Ensure Docker installed
   apt:
     name:
-      - docker-ce
-      - docker-ce-cli 
-      - containerd.io
+      - docker-ce=5:20.10*
+      - docker-ce-cli=5:20.10*
+      - containerd.io=1.4*
 
 - name: Install docker-compose & Python Docker SDK
   pip:
     name: 
-      - docker-compose
-      - docker
+      - docker-compose==1.29.2
+      - docker==5.0.3
 
 - name: Enable containerd & Docker on startup
   systemd:
