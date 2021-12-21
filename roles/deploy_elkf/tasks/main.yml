@@ -20,8 +20,6 @@
         - "{{ elkf_group_label }}"
   register: elkf_docker_host_info
 
-- debug: var=elkf_docker_host_info
-
 - name: Remove previous containers
   docker_container:
     name: "{{ item.Id }}"
