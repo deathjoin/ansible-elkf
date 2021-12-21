@@ -1,7 +1,12 @@
-elkf_version: "7.7.0"
-elkf_network_name: elastic
+elkf_default_version: "7.7.0"
+elkf_default_network_name: elastic
+elkf_default_stack_name: elkf_default
+elkf_group_label: "group={{ elkf_stack.name | default(elkf_default_stack_name) }}"
 elkf_containers:
-  - name: ElasticSearch
+  - name: elasticsearch
+    labels:
+      - "service=elastic"
+      - "{{ elkf_group_label }}"
     image: docker.elastic.co/elasticsearch/elasticsearch
     volumes: []
     ports: 
@@ -17,19 +22,28 @@ elkf_containers:
           6535313336326232620a663637323036333033386631376664663263313364613831366262633466
           6431
       "discovery.type": "single-node"
-  - name: Logstash
+  - name: logstash
+    labels:
+      - "service=logstash"
+      - "{{ elkf_group_label }}"
     image: docker.elastic.co/logstash/logstash
     volumes: []
     ports: []
     environment: {}
-  - name: Kibana
+  - name: kibana
+    labels:
+      - "service=kibana"
+      - "{{ elkf_group_label }}"
     image: docker.elastic.co/kibana/kibana
     environment: {}
     volumes: 
       - "/etc/kibana.yml:/usr/share/kibana/config/kibana.yml"
     ports: 
       - "5601:5601"
-  - name: Filebeat
+  - name: filebeat
+    labels:
+      - "service=filebeat"
+      - "{{ elkf_group_label }}"
     image: docker.elastic.co/beats/filebeat
     ports: []
     volumes: []

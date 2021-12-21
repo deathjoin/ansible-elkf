@@ -1,0 +1,27 @@
+---
+elkf_stack:
+  name: elkf_stack
+  version: "7.7.0"
+  network: elkf_cluster_network
+  hosts_configuration:
+    - host_inventory_name: local_ubuntu1
+      services:
+        - &es
+          name: elasticsearch
+          node_name: es-node0
+          ports: 
+            api: "9200"
+            discovery: "9300"
+        - <<: *es
+          node_name: es-node1
+          ports:
+            api: "9201"
+            discovery: "9301"
+        # - service: logstash
+        # - service: filebeat
+    - host_inventory_name: local_ubuntu2
+      services:
+        - <<: *es
+          node_name: es-node2
+        # - service: kibana
+    

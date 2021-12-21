@@ -1,33 +1,60 @@
+- name: Find current host services
+  set_fact:
+    elkf_host_services: "{{ 
+      elkf_stack['hosts_configuration'] | 
+      selectattr('host_inventory_name', 'equalto', inventory_hostname) | 
+      map(attribute='services') |
+      flatten
+      }}"
+
+- name: Get stack containers & networks
+  docker_host_info:
+    containers: yes
+    containers_filters:
+      label:
+        - "{{ elkf_group_label }}"
+      # status: "exited"
+    networks: yes
+    networks_filters:
+      label:
+        - "{{ elkf_group_label }}"
+  register: elkf_docker_host_info
+
+- debug: var=elkf_docker_host_info
+
+- name: Remove previous containers
+  docker_container:
+    name: "{{ item.Id }}"
+    state: absent
+  loop: "{{ elkf_docker_host_info.containers }}"
+
+- name: Remove previous network
+  docker_network:
+    name: "{{ item.Id }}"
+    state: absent
+  loop: "{{ elkf_docker_host_info.networks }}"
+
 - name: Create docker network for ELKF
   docker_network:
-    name: "{{ elkf_network_name }}"
+    name: "{{ elkf_stack.network | default(elkf_default_network_name) }}"
+    labels: "{{ elkf_group_label }}"
 
-- name: "Pull ELKF images: Version {{ elkf_version }}"
+- name: "Pull ELKF images: Version {{ elkf_stack.version | default(elkf_default_version) }}"
   docker_image:
     name: "{{ item.image }}"
-    tag: "{{ elkf_version }}"
+    tag: "{{ elkf_stack.version | default(elkf_default_version) }}"
     source: pull
   loop: "{{ elkf_containers }}"
 
-- name: Remove previous ELKF Containers
-  docker_container:
-    name: "{{ item.image.split('/')[-1] }}"
-    state: absent
-  loop: "{{ elkf_containers }}"
-
-- name: Put Kibana config
+- name: Put Kibana basic config
   copy:
     src: kibana.yml
     dest: /etc/kibana.yml
 
-- name: "Run ELKF Containers: Version {{ elkf_version }}"
-  docker_container:
-    name: "{{ item.image.split('/')[-1] }}"
-    image: "{{ item.image }}:{{ elkf_version }}"
-    ports: "{{ item.ports }}"
-    env: "{{ item.environment }}"
-    networks:
-      - name: "{{ elkf_network_name }}"
-        aliases:
-          - "{{ item.image.split('/')[-1] }}"
-  loop: "{{ elkf_containers }}"
+- name: Put ElasticSearch basic config
+  copy:
+    src: elasticsearch.yml
+    dest: /etc/elasticsearch.yml
+
+- name: "Run ELKF Containers: ElasticSearch:{{ elkf_stack.version | default(elkf_default_version) }}"
+  import_tasks: run_elasticsearch.yml

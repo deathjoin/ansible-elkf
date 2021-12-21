@@ -1,0 +1,57 @@
+---
+- set_fact:
+    elkf_es_hosts: []
+    elkf_es_node_names: []
+    elkf_es_api_endpoints: []
+    elkf_es_disc_endpoonts: []
+    elkf_es_image: "{{ elkf_containers | selectattr('name', 'equalto', 'elasticsearch') | map(attribute='image') | first }}"
+    elkf_es_version: "{{ elkf_stack.version | default(elkf_default_version) }}"
+
+- name: "ElasticSearch: Find all elastic hosts"
+  set_fact:
+    elkf_es_hosts: "{{ elkf_es_hosts + [item.host_inventory_name] }}"
+  loop: "{{ elkf_stack.hosts_configuration }}"
+  when: count_es_at_host|int > 0
+  vars:
+    count_es_at_host: "{{ item.services | json_query(\"[?name=='elasticsearch']\") | length }}"
+
+- debug: var=elkf_es_hosts
+
+- name: "ElasticSearch: Find all API & Discovery endpoints"
+  include_tasks: elastic_endpoints_collector.yml
+  loop: "{{ elkf_es_hosts }}"
+  loop_control:
+    loop_var: es_host
+
+- debug: var=elkf_es_api_endpoints
+- debug: var=elkf_es_disc_endpoonts
+- debug: var=elkf_es_node_names
+
+- name: Start elastic containers
+  docker_container:
+    name: "{{ es_container.node_name }}"
+    image: "{{ elkf_es_image }}:{{ elkf_es_version }}"
+    volumes:
+      - "/etc/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml:ro"
+    ports: 
+      - "{{ es_container.ports.api }}:9200"
+      - "{{ es_container.ports.discovery }}:9300"
+    labels:
+      service: elastic
+      group:  "{{ elkf_stack.name | default(elkf_default_stack_name) }}"
+    env:
+      ES_JAVA_OPTS: "-Xms1g -Xmx1g"
+      "cluster.name": "stack"
+      "discovery.seed_hosts": "{{ elkf_es_disc_endpoonts | reject('equalto', reject_value) |join(',') }}"
+      "node.name": "{{ es_container.node_name }}"
+      "cluster.initial_master_nodes": "{{ elkf_es_node_names|join(',') }}"
+      "network.bind_host": "0.0.0.0"
+      "network.publish_host": "{{ ansible_eth0.ipv4.address }}"
+      "transport.publish_port": "{{ es_container.ports.discovery }}"
+      "xpack.monitoring.enabled": "false"
+  loop: "{{ elkf_host_services | selectattr('name', 'equalto', 'elasticsearch') }}"
+  loop_control:
+    loop_var: es_container
+    index_var: es_index
+  vars:
+    reject_value: "{{ ansible_eth0.ipv4.address }}:{{ es_container.ports.discovery }}"

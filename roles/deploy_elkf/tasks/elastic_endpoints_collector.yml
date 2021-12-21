@@ -1,0 +1,9 @@
+---
+- name: Find ElasticSearch endpoints
+  set_fact:
+    elkf_es_api_endpoints: "{{ elkf_es_api_endpoints + [hostvars[es_host]['ansible_host'] + ':' + item.ports.api] }}"
+    elkf_es_disc_endpoonts: "{{ elkf_es_disc_endpoonts + [hostvars[es_host]['ansible_host'] + ':' + item.ports.discovery] }}"
+    elkf_es_node_names: "{{ elkf_es_node_names + [item.node_name] }}"
+  loop: "{{ elkf_stack.hosts_configuration | json_query(query) | flatten | json_query(\"[?name=='elasticsearch']\") }}"
+  vars:
+    query: "[?host_inventory_name=='{{ es_host }}'].services"
