@@ -51,10 +51,5 @@
     src: kibana.yml
     dest: /etc/kibana.yml
 
-- name: Put ElasticSearch basic config
-  copy:
-    src: elasticsearch.yml
-    dest: /etc/elasticsearch.yml
-
 - name: "Run ELKF Containers: ElasticSearch:{{ elkf_stack.version | default(elkf_default_version) }}"
   import_tasks: run_elasticsearch.yml

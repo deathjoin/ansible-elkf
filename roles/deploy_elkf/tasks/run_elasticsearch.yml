@@ -7,6 +7,11 @@
     elkf_es_image: "{{ elkf_containers | selectattr('name', 'equalto', 'elasticsearch') | map(attribute='image') | first }}"
     elkf_es_version: "{{ elkf_stack.version | default(elkf_default_version) }}"
 
+- name: Put ElasticSearch basic config
+  copy:
+    src: elasticsearch.yml
+    dest: /etc/elasticsearch.yml
+
 - name: "ElasticSearch: Find all elastic hosts"
   set_fact:
     elkf_es_hosts: "{{ elkf_es_hosts + [item.host_inventory_name] }}"
