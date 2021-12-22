@@ -1,0 +1,21 @@
+---
+- set_fact:
+    # filebeat container image
+    elkf_filebeat_image: "{{ elkf_containers | selectattr('name', 'equalto', 'logstash') | map(attribute='image') | first }}"
+
+- name: "Pull Filebeat image: {{ elkf_stack_version }}"
+  docker_image:
+    name: "{{ elkf_filebeat_image }}"
+    tag: "{{ elkf_stack_version }}"
+    source: pull
+
+- name: "Start Logstash containers {{ elkf_stack_version }}"
+  docker_container:
+    name: "{{ filebeat_container.node_name }}"
+    image: "{{ elkf_filebeat_image }}:{{ elkf_stack_version }}"
+    labels:
+      service: filebeat
+      group:  "{{ elkf_stack_name }}"
+  loop: "{{ current_host_filebeat_containers }}"
+  loop_control:
+    loop_var: filebeat_container

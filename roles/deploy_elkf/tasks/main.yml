@@ -26,3 +26,13 @@
   import_tasks: run_kibana.yml
   vars:
     current_host_kibana_containers: "{{ elkf_host_services | selectattr('name', 'equalto', 'kibana') }}"
+
+- name: "Run ELKF Containers: Logstash"
+  import_tasks: run_logstash.yml
+  vars:
+    current_host_logstash_containers: "{{ elkf_host_services | selectattr('name', 'equalto', 'logstash') }}"
+
+- name: "Run ELKF Containers: Filebeat"
+  import_tasks: run_filebeat.yml
+  vars:
+    current_host_filebeat_containers: "{{ elkf_host_services | selectattr('name', 'equalto', 'filebeat') }}"

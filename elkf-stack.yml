@@ -17,8 +17,8 @@ elkf_stack:
           ports:
             api: "9201"
             discovery: "9301"
-        # - service: logstash
-        # - service: filebeat
+        - name: logstash
+        - name: filebeat
     - host_inventory_name: local_ubuntu2
       services:
         - <<: *es

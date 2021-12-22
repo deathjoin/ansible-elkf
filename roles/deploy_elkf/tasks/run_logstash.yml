@@ -1,0 +1,21 @@
+---
+- set_fact:
+    # logstash container image
+    elkf_logstash_image: "{{ elkf_containers | selectattr('name', 'equalto', 'logstash') | map(attribute='image') | first }}"
+
+- name: "Pull Logstash image: {{ elkf_stack_version }}"
+  docker_image:
+    name: "{{ elkf_logstash_image }}"
+    tag: "{{ elkf_stack_version }}"
+    source: pull
+
+- name: "Start Logstash containers {{ elkf_stack_version }}"
+  docker_container:
+    name: "{{ logstash_container.node_name }}"
+    image: "{{ elkf_logstash_image }}:{{ elkf_stack_version }}"
+    labels:
+      service: logstash
+      group:  "{{ elkf_stack_name }}"
+  loop: "{{ current_host_logstash_containers }}"
+  loop_control:
+    loop_var: logstash_container
