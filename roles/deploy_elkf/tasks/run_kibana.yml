@@ -1,1 +1,39 @@
 ---
+- set_fact:
+    # kinbana container image
+    elkf_kibana_image: "{{ elkf_containers | selectattr('name', 'equalto', 'kibana') | map(attribute='image') | first }}"
+    # Protocol to be used to connect elasticsearch nodes
+    elkf_kibana_to_es_protocol: http
+
+- name: "Pull Kibana image: {{ elkf_stack_version }}"
+  docker_image:
+    name: "{{ elkf_kibana_image }}"
+    tag: "{{ elkf_stack_version }}"
+    source: pull
+
+- name: "Start Kibana containers {{ elkf_stack.version | default(elkf_default_version) }}"
+  docker_container:
+    name: "{{ kibana_container.node_name }}"
+    image: "{{ elkf_kibana_image }}:{{ elkf_stack_version }}"
+    ports: 
+      - "{{ kibana_container.ports.web }}:5601"
+    labels:
+      service: kibana
+      group:  "{{ elkf_stack_name }}"
+    env:
+      # names
+      "server.name": "{{ kibana_container.node_name }}"
+      # discovery
+      "elasticsearch.hosts": "{{ elkf_es_api_endpoints | map('string_postfix', protocol_string_prefix) | join(',') }}"
+      # network options
+      "server.host": "0.0.0.0"
+      "server.port": "5601"
+  loop: "{{ current_host_kibana_containers }}"
+  loop_control:
+    loop_var: kibana_container
+  vars:
+    current_host_ip: "{{ ansible_eth0.ipv4.address }}"
+    current_es_node_ip_port: "{{ ansible_eth0.ipv4.address }}:{{ kibana_container.ports.discovery }}"
+    # list of all elastic endpoints minus current node for discovery
+    current_seed_hosts: "{{ elkf_es_disc_endpoonts | reject('equalto', current_es_node_ip_port) | join(',') }}"
+    protocol_string_prefix: "{{ elkf_kibana_to_es_protocol }}://"

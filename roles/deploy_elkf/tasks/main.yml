@@ -2,6 +2,8 @@
   set_fact:
     # stack version
     elkf_stack_version: "{{ elkf_stack.version | default(elkf_default_version) }}"
+    # cluster name
+    elkf_stack_name: "{{ elkf_stack.name | default(elkf_default_stack_name) }}"
     # services for current host
     elkf_host_services: "{{ 
       elkf_stack['hosts_configuration'] | 
@@ -17,6 +19,10 @@
 
 - name: "Run ELKF Containers: ElasticSearch"
   import_tasks: run_elasticsearch.yml
+  vars:
+    current_host_es_containers: "{{ elkf_host_services | selectattr('name', 'equalto', 'elasticsearch') }}"
 
-- name: "Run ELKF Containers: Kibana"\
+- name: "Run ELKF Containers: Kibana"
   import_tasks: run_kibana.yml
+  vars:
+    current_host_kibana_containers: "{{ elkf_host_services | selectattr('name', 'equalto', 'kibana') }}"

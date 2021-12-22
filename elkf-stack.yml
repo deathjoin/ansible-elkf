@@ -23,5 +23,8 @@ elkf_stack:
       services:
         - <<: *es
           node_name: es-node2
-        # - service: kibana
+        - name: kibana
+          node_name: kibana0
+          ports:
+            web: "5601"
     

@@ -40,7 +40,7 @@
       - "{{ es_container.ports.discovery }}:9300"
     labels:
       service: elastic
-      group:  "{{ elkf_stack.name | default(elkf_default_stack_name) }}"
+      group:  "{{ elkf_stack_name }}"
     env:
       ES_JAVA_OPTS: "-Xms1g -Xmx1g"
       # names
@@ -56,10 +56,9 @@
       "transport.publish_port": "{{ es_container.ports.discovery }}"
       # disable xpack for now
       "xpack.monitoring.enabled": "false"
-  loop: "{{ elkf_host_services | selectattr('name', 'equalto', 'elasticsearch') }}"
+  loop: "{{ current_host_es_containers }}"
   loop_control:
     loop_var: es_container
-    index_var: es_index
   vars:
     current_host_ip: "{{ ansible_eth0.ipv4.address }}"
     current_es_node_ip_port: "{{ ansible_eth0.ipv4.address }}:{{ es_container.ports.discovery }}"
