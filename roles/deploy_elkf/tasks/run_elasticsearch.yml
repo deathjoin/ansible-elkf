@@ -1,16 +1,17 @@
 ---
 - set_fact:
+    # list of hosts with elastic
     elkf_es_hosts: []
+    # list of elastic node names
     elkf_es_node_names: []
+    # list of elastic api endpoints (ip:port)
     elkf_es_api_endpoints: []
+    # list of elastic discovery endpoints (ip:port)
     elkf_es_disc_endpoonts: []
+    # elastic container image
     elkf_es_image: "{{ elkf_containers | selectattr('name', 'equalto', 'elasticsearch') | map(attribute='image') | first }}"
+    # elastic version
     elkf_es_version: "{{ elkf_stack.version | default(elkf_default_version) }}"
-
-- name: Put ElasticSearch basic config
-  copy:
-    src: elasticsearch.yml
-    dest: /etc/elasticsearch.yml
 
 - name: "ElasticSearch: Find all elastic hosts"
   set_fact:
@@ -20,14 +21,13 @@
   vars:
     count_es_at_host: "{{ item.services | json_query(\"[?name=='elasticsearch']\") | length }}"
 
-- debug: var=elkf_es_hosts
-
 - name: "ElasticSearch: Find all API & Discovery endpoints"
   include_tasks: elastic_endpoints_collector.yml
   loop: "{{ elkf_es_hosts }}"
   loop_control:
     loop_var: es_host
 
+- debug: var=elkf_es_hosts
 - debug: var=elkf_es_api_endpoints
 - debug: var=elkf_es_disc_endpoonts
 - debug: var=elkf_es_node_names
@@ -46,17 +46,22 @@
       group:  "{{ elkf_stack.name | default(elkf_default_stack_name) }}"
     env:
       ES_JAVA_OPTS: "-Xms1g -Xmx1g"
-      "cluster.name": "stack"
-      "discovery.seed_hosts": "{{ elkf_es_disc_endpoonts | reject('equalto', reject_value) |join(',') }}"
+      # names
+      "cluster.name":"{{ elkf_stack.name | default(elkf_default_stack_name) }}"
       "node.name": "{{ es_container.node_name }}"
-      "cluster.initial_master_nodes": "{{ elkf_es_node_names|join(',') }}"
+      # discovery & masters
+      "discovery.seed_hosts": "{{ elkf_es_disc_endpoonts | reject('equalto', current_es_node_ip_port) | join(',') }}"
+      "cluster.initial_master_nodes": "{{ elkf_es_node_names| join(',') }}"
+      # network options
+      "network.host": "0.0.0.0"
       "network.bind_host": "0.0.0.0"
       "network.publish_host": "{{ ansible_eth0.ipv4.address }}"
       "transport.publish_port": "{{ es_container.ports.discovery }}"
+      # disable xpack for now
       "xpack.monitoring.enabled": "false"
   loop: "{{ elkf_host_services | selectattr('name', 'equalto', 'elasticsearch') }}"
   loop_control:
     loop_var: es_container
     index_var: es_index
   vars:
-    reject_value: "{{ ansible_eth0.ipv4.address }}:{{ es_container.ports.discovery }}"
+    current_es_node_ip_port: "{{ ansible_eth0.ipv4.address }}:{{ es_container.ports.discovery }}"
