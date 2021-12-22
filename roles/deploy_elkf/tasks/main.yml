@@ -22,6 +22,16 @@
   vars:
     current_host_es_containers: "{{ elkf_host_services | selectattr('name', 'equalto', 'elasticsearch') }}"
 
+- name: "Healthchech ELKF: ElasticSearch"
+  docker_container_info:
+    name: "{{ first_es_node_name }}"
+  register: result
+  until: result.container.State.Health.Status == 'healthy'
+  retries: 5
+  delay: 10
+  vars:
+    first_es_node_name: "{{ elkf_host_services | selectattr('name', 'equalto', 'elasticsearch') | map(attribute='node_name') | first }}"
+
 - name: "Run ELKF Containers: Kibana"
   import_tasks: run_kibana.yml
   vars:
