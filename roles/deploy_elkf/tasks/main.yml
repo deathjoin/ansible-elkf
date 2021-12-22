@@ -17,3 +17,6 @@
 
 - name: "Run ELKF Containers: ElasticSearch"
   import_tasks: run_elasticsearch.yml
+
+- name: "Run ELKF Containers: Kibana"\
+  import_tasks: run_kibana.yml
