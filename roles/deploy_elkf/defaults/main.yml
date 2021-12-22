@@ -4,47 +4,10 @@ elkf_default_stack_name: elkf_default
 elkf_group_label: "group={{ elkf_stack.name | default(elkf_default_stack_name) }}"
 elkf_containers:
   - name: elasticsearch
-    labels:
-      - "service=elastic"
-      - "{{ elkf_group_label }}"
     image: docker.elastic.co/elasticsearch/elasticsearch
-    volumes: []
-    ports: 
-      - "9200:9200"
-      - "9300:9300"
-    environment:
-      ES_JAVA_OPTS: "-Xms512m -Xmx512m"
-      ELASTIC_PASSWORD: !vault |
-          $ANSIBLE_VAULT;1.1;AES256
-          39376136653237313632303231353732643466343363326330316433636664373566396436346333
-          6262343233363565393864316263386233313664306466620a663834343637646539626663366432
-          31656235323438383134613238363862366437343330613564643435613761393965613561326163
-          6535313336326232620a663637323036333033386631376664663263313364613831366262633466
-          6431
-      "discovery.type": "single-node"
   - name: logstash
-    labels:
-      - "service=logstash"
-      - "{{ elkf_group_label }}"
     image: docker.elastic.co/logstash/logstash
-    volumes: []
-    ports: []
-    environment: {}
   - name: kibana
-    labels:
-      - "service=kibana"
-      - "{{ elkf_group_label }}"
     image: docker.elastic.co/kibana/kibana
-    environment: {}
-    volumes: 
-      - "/etc/kibana.yml:/usr/share/kibana/config/kibana.yml"
-    ports: 
-      - "5601:5601"
   - name: filebeat
-    labels:
-      - "service=filebeat"
-      - "{{ elkf_group_label }}"
     image: docker.elastic.co/beats/filebeat
-    ports: []
-    volumes: []
-    environment: {}
