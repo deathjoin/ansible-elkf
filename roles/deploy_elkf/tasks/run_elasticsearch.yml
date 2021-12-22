@@ -31,7 +31,7 @@
   loop_control:
     loop_var: es_host
 
-- name: "Start ElasticSearch containers {{ elkf_stack.version | default(elkf_default_version) }}"
+- name: "Start ElasticSearch containers {{ elkf_stack_version }}"
   docker_container:
     name: "{{ es_container.node_name }}"
     image: "{{ elkf_es_image }}:{{ elkf_stack_version }}"

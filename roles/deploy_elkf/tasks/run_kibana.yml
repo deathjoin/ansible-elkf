@@ -11,7 +11,7 @@
     tag: "{{ elkf_stack_version }}"
     source: pull
 
-- name: "Start Kibana containers {{ elkf_stack.version | default(elkf_default_version) }}"
+- name: "Start Kibana containers {{ elkf_stack_version }}"
   docker_container:
     name: "{{ kibana_container.node_name }}"
     image: "{{ elkf_kibana_image }}:{{ elkf_stack_version }}"
