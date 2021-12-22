@@ -13,6 +13,12 @@
     # elastic version
     elkf_es_version: "{{ elkf_stack.version | default(elkf_default_version) }}"
 
+- name: "Pull ElasticSearch image: {{ elkf_stack.version | default(elkf_default_version) }}"
+  docker_image:
+    name: "{{ elkf_es_image }}"
+    tag: "{{ elkf_es_version }}"
+    source: pull
+
 - name: "ElasticSearch: Find all elastic hosts"
   set_fact:
     elkf_es_hosts: "{{ elkf_es_hosts + [item.host_inventory_name] }}"

@@ -12,12 +12,5 @@
     name: "{{ elkf_stack.network | default(elkf_default_network_name) }}"
     labels: "{{ elkf_group_label }}"
 
-- name: "Pull ELKF images: Version {{ elkf_stack.version | default(elkf_default_version) }}"
-  docker_image:
-    name: "{{ item.image }}"
-    tag: "{{ elkf_stack.version | default(elkf_default_version) }}"
-    source: pull
-  loop: "{{ elkf_containers }}"
-
 - name: "Run ELKF Containers: ElasticSearch:{{ elkf_stack.version | default(elkf_default_version) }}"
   import_tasks: run_elasticsearch.yml
