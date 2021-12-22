@@ -18,7 +18,9 @@ elkf_stack:
             api: "9201"
             discovery: "9301"
         - name: logstash
+          node_name: logstash0
         - name: filebeat
+          node_name: filebeat0
     - host_inventory_name: local_ubuntu2
       services:
         - <<: *es
