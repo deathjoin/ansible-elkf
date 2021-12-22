@@ -22,14 +22,15 @@
       group:  "{{ elkf_stack_name }}"
     env:
       # names
-      "server.name": "{{ kibana_container.node_name }}"
+      "SERVER_NAME": "{{ kibana_container.node_name }}"
       # discovery
-      "elasticsearch.hosts": "{{ elkf_es_api_endpoints | map('string_postfix', protocol_string_prefix) | join(',') }}"
+      "ELASTICSEARCH_HOSTS": "{{ elastic_search_hosts | to_json(separators=(',',':')) }}"
       # network options
-      "server.host": "0.0.0.0"
-      "server.port": "5601"
+      "SERVER_HOST": "0.0.0.0"
+      "SERVER_PORT": "5601"
   loop: "{{ current_host_kibana_containers }}"
   loop_control:
     loop_var: kibana_container
   vars:
     protocol_string_prefix: "{{ elkf_kibana_to_es_protocol }}://"
+    elastic_search_hosts: "{{ [protocol_string_prefix]|product(elkf_es_api_endpoints)| map('join') }}"

@@ -44,7 +44,7 @@
     env:
       ES_JAVA_OPTS: "-Xms1g -Xmx1g"
       # names
-      "cluster.name":"{{ elkf_stack.name | default(elkf_default_stack_name) }}"
+      "cluster.name": "{{ elkf_stack.name | default(elkf_default_stack_name) }}"
       "node.name": "{{ es_container.node_name }}"
       # discovery & masters
       "discovery.seed_hosts": "{{ current_seed_hosts }}"
