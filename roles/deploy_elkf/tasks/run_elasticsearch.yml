@@ -41,6 +41,12 @@
     labels:
       service: elastic
       group:  "{{ elkf_stack_name }}"
+    healthcheck:
+      start_period: 30s
+      retries: 5
+      timeout: 10s
+      interval: 30s
+      test: 'curl --silent --fail localhost:9200/_cluster/health?wait_for_status=green&timeout=1s || exit 1'
     env:
       ES_JAVA_OPTS: "-Xms1g -Xmx1g"
       # names
