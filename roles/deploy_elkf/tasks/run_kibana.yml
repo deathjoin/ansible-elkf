@@ -32,8 +32,4 @@
   loop_control:
     loop_var: kibana_container
   vars:
-    current_host_ip: "{{ ansible_eth0.ipv4.address }}"
-    current_es_node_ip_port: "{{ ansible_eth0.ipv4.address }}:{{ kibana_container.ports.discovery }}"
-    # list of all elastic endpoints minus current node for discovery
-    current_seed_hosts: "{{ elkf_es_disc_endpoonts | reject('equalto', current_es_node_ip_port) | join(',') }}"
     protocol_string_prefix: "{{ elkf_kibana_to_es_protocol }}://"
