@@ -10,10 +10,8 @@
     elkf_es_disc_endpoonts: []
     # elastic container image
     elkf_es_image: "{{ elkf_containers | selectattr('name', 'equalto', 'elasticsearch') | map(attribute='image') | first }}"
-    # elastic version
-    elkf_es_version: "{{ elkf_stack.version | default(elkf_default_version) }}"
 
-- name: "Pull ElasticSearch image: {{ elkf_stack.version | default(elkf_default_version) }}"
+- name: "Pull ElasticSearch image: {{ elkf_stack_version }}"
   docker_image:
     name: "{{ elkf_es_image }}"
     tag: "{{ elkf_es_version }}"
@@ -33,10 +31,10 @@
   loop_control:
     loop_var: es_host
 
-- name: Start elastic containers
+- name: "Start ElasticSearch containers {{ elkf_stack.version | default(elkf_default_version) }}"
   docker_container:
     name: "{{ es_container.node_name }}"
-    image: "{{ elkf_es_image }}:{{ elkf_es_version }}"
+    image: "{{ elkf_es_image }}:{{ elkf_stack_version }}"
     ports: 
       - "{{ es_container.ports.api }}:9200"
       - "{{ es_container.ports.discovery }}:9300"

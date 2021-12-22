@@ -1,5 +1,8 @@
 - name: Find current host services
   set_fact:
+    # stack version
+    elkf_stack_version: "{{ elkf_stack.version | default(elkf_default_version) }}"
+    # services for current host
     elkf_host_services: "{{ 
       elkf_stack['hosts_configuration'] | 
       selectattr('host_inventory_name', 'equalto', inventory_hostname) | 
@@ -12,5 +15,5 @@
     name: "{{ elkf_stack.network | default(elkf_default_network_name) }}"
     labels: "{{ elkf_group_label }}"
 
-- name: "Run ELKF Containers: ElasticSearch:{{ elkf_stack.version | default(elkf_default_version) }}"
+- name: "Run ELKF Containers: ElasticSearch"
   import_tasks: run_elasticsearch.yml
