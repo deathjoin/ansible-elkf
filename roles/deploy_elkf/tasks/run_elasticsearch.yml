@@ -1,6 +1,6 @@
 ---
 - set_fact:
-    # list of hosts with elastic
+    # list of inventory hosts with elastic
     elkf_es_hosts: []
     # list of elastic node names
     elkf_es_node_names: []
@@ -27,11 +27,6 @@
   loop_control:
     loop_var: es_host
 
-- debug: var=elkf_es_hosts
-- debug: var=elkf_es_api_endpoints
-- debug: var=elkf_es_disc_endpoonts
-- debug: var=elkf_es_node_names
-
 - name: Start elastic containers
   docker_container:
     name: "{{ es_container.node_name }}"
@@ -50,12 +45,12 @@
       "cluster.name":"{{ elkf_stack.name | default(elkf_default_stack_name) }}"
       "node.name": "{{ es_container.node_name }}"
       # discovery & masters
-      "discovery.seed_hosts": "{{ elkf_es_disc_endpoonts | reject('equalto', current_es_node_ip_port) | join(',') }}"
+      "discovery.seed_hosts": "{{ current_seed_hosts }}"
       "cluster.initial_master_nodes": "{{ elkf_es_node_names| join(',') }}"
       # network options
       "network.host": "0.0.0.0"
       "network.bind_host": "0.0.0.0"
-      "network.publish_host": "{{ ansible_eth0.ipv4.address }}"
+      "network.publish_host": "{{ current_host_ip }}"
       "transport.publish_port": "{{ es_container.ports.discovery }}"
       # disable xpack for now
       "xpack.monitoring.enabled": "false"
@@ -64,4 +59,7 @@
     loop_var: es_container
     index_var: es_index
   vars:
+    current_host_ip: "{{ ansible_eth0.ipv4.address }}"
     current_es_node_ip_port: "{{ ansible_eth0.ipv4.address }}:{{ es_container.ports.discovery }}"
+    # list of all elastic endpoints minus current node for discovery
+    current_seed_hosts: "{{ elkf_es_disc_endpoonts | reject('equalto', current_es_node_ip_port) | join(',') }}"
