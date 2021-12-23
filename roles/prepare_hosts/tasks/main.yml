@@ -38,3 +38,8 @@
   loop:
     - containerd.service
     - docker.service
+
+- name: set sysctl vm.max_map_count
+  sysctl:
+    name: vm.max_map_count
+    value: '262144'
