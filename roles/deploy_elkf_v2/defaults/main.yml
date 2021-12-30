@@ -1,0 +1,23 @@
+elkf_default_stack_version: "7.7.0"
+elkf_default_cluster_name: "elkf_default_stack"
+elfk_default_images:
+  elasticsearch: docker.elastic.co/elasticsearch/elasticsearch
+  logstash: docker.elastic.co/logstash/logstash
+  kibana: docker.elastic.co/kibana/kibana
+  filebeat: docker.elastic.co/beats/filebeat
+elkf_default_memory_mb:
+  elasticsearch: 1024
+  kibana: 1024
+  logstash: 512
+  filebeat: 512
+elkf_default_starting_ports:
+  elasticsearch:
+    api: 9200
+    discovery: 9300
+  kibana:
+    web: 5601
+elkf_default_nodename_prefix:
+  elasticsearch: "es-node-"
+  kibana: "kibana-"
+  logstash: "logstash-"
+  filebeat: "filebeat-"
