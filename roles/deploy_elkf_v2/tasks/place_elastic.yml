@@ -16,7 +16,7 @@
 - name: "Place Elastic {{ elkf_stack_nodename_prefix_elastic ~ service.0 }} on {{ service.1 }}"
   set_fact:
     elkf_services_elastic: "{{ hostvars[service.1]['elkf_services_elastic'] + [elkf_stack_nodename_prefix_elastic ~ service.0] }}"
-    elkf_remaining_memory: "{{ elkf_remaining_memory|int - elkf_stack_memory_elasticsearch|int }}"
+    elkf_remaining_memory: "{{ hostvars[service.1]['elkf_remaining_memory']|int - elkf_stack_memory_elasticsearch|int }}"
   delegate_to: "{{ service.1 }}"
   delegate_facts: true
   when: 
