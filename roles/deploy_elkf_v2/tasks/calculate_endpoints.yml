@@ -1,0 +1,16 @@
+---
+- name: Set remaining services to deploy
+  set_fact:
+    remaining_elastic_nodes: "{{ elastic | default(0) }}"
+    remaining_kibana_nodes: "{{ kibana | default(0) }}"
+    remaining_logstash_nodes: "{{ logstash | default(0) }}"
+    remaining_filebeat_nodes: "{{ filebeat | default(0) }}"
+
+- name: Calc hosts all elastic nodes
+  include_tasks: place_elastic.yml
+  loop: "{{ range(remaining_elastic_nodes | int) | list }}"
+  loop_control:
+    loop_var: service_index
+
+
+# ansible_memfree_mb

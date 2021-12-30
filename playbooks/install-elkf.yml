@@ -1,11 +1,11 @@
 ---
 - name: Check & install elfk
-  hosts: all
+  hosts: elastic
   become: yes
 
   roles:
-  - role: prepare_hosts
-    tags: prepare
-  - role: deploy_elkf
+  # - role: prepare_hosts
+  #   tags: prepare
+  - role: deploy_elkf_v2
     tags: deploy
 

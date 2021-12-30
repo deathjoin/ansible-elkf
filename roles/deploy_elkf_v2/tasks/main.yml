@@ -1,0 +1,42 @@
+---
+- name: Set vars or defaults
+  set_fact:
+    elkf_stack_version: "{{ elkf_stack.version | default(elkf_default_stack_version) }}"
+    elkf_stack_cluster_name: "{{ elkf_stack.cluster_name | default(elkf_default_cluster_name) }}"
+    # images
+    elkf_stack_image_elasticsearch: "{{ elkf_stack.images.elasticsearch | default(elfk_default_images.elasticsearch) }}"
+    elkf_stack_image_kibana: "{{ elkf_stack.images.kibana | default(elfk_default_images.kibana) }}"
+    elkf_stack_image_logstash: "{{ elkf_stack.images.logstash | default(elfk_default_images.logstash) }}"
+    elkf_stack_image_filebeat: "{{ elkf_stack.images.filebeat | default(elfk_default_images.filebeat) }}"
+    # memory
+    elkf_stack_memory_elasticsearch: "{{ elkf_stack.memory.elasticsearch | default(elkf_default_memory_mb.elasticsearch) }}"
+    elkf_stack_memory_kibana: "{{ elkf_stack.memory.kibana | default(elkf_default_memory_mb.kibana) }}"
+    elkf_stack_memory_logstash: "{{ elkf_stack.memory.logstash | default(elkf_default_memory_mb.logstash) }}"
+    elkf_stack_memory_filebeat: "{{ elkf_stack.memory.filebeat | default(elkf_default_memory_mb.filebeat) }}"
+    # prefixes
+    elkf_stack_nodename_prefix_elastic: "{{ elkf_stack.nodename_prefix.elastic | default(elkf_default_nodename_prefix.elasticsearch) }}"
+    elkf_stack_nodename_prefix_kibana: "{{ elkf_stack.nodename_prefix.kibana | default(elkf_default_nodename_prefix.kibana) }}"
+    elkf_stack_nodename_prefix_logstash: "{{ elkf_stack.nodename_prefix.logstash | default(elkf_default_nodename_prefix.logstash) }}"
+    elkf_stack_nodename_prefix_filebeat: "{{ elkf_stack.nodename_prefix.filebeat | default(elkf_default_nodename_prefix.filebeat) }}"
+    # host remaining memory
+    elkf_remaining_memory: "{{ hostvars[inventory_hostname]['ansible_memfree_mb'] }}"
+    # services
+    elkf_services_elastic: []
+    elkf_services_kibana: []
+    elkf_services_logstash: []
+    elkf_services_filebeat: []
+
+- name: Echo vars
+  debug: "var=hostvars[inventory_hostname]['elkf_remaining_memory']"
+
+- name: Calculate elastic endpoints
+  become: no
+  connection: local
+  run_once: true
+  import_tasks: calculate_endpoints.yml
+
+- name: Echo vars
+  debug: "var=hostvars[inventory_hostname]['elkf_remaining_memory']"
+
+- name: Echo vars
+  debug: var=elkf_services_elastic
