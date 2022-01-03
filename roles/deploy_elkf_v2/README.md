@@ -14,3 +14,8 @@
 6. [ ] Задеплоить Kibana
 7. [ ] Задеплоить Остальное
 8. [ ] Проверить healthcheck кластера
+
+## Запуск плейбука
+```bash
+ansible-playbook -i environments/prod -e "elastic=2 kibana=1"  playbooks/install-elkf.yml 
+```
