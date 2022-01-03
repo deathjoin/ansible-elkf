@@ -1,3 +1,6 @@
+# Вторая версия роли в разработке:
+https://github.com/deathjoin/ansible-elkf/tree/master/roles/deploy_elkf_v2
+
 # ansible-elfk
 
 Ansible roles to prepare servers and deploy ELKF Stack on Ubuntu.
