@@ -1,0 +1,16 @@
+- set_fact:
+    elkf_services_elastic_ports: "{{ hostvars[current_host]['elkf_services_elastic_ports']|default([]) + [{
+      'node_name': elkf_stack_nodename_prefix_elastic ~ item.0,
+      'port_api': port_api,
+      'port_discovery': port_discovery
+    }] }}"
+    elkf_elastic_disc_temp: "{{ hostvars[current_host]['elkf_elastic_seeds_temp']|default([]) + [
+      hostvars[current_host]['ansible_eth0']['ipv4']['address'] ~ ':' ~ port_discovery
+    ] }}"
+    elkf_elastic_api_temp: "{{ hostvars[current_host]['elkf_elastic_api_temp']|default([]) + [
+      hostvars[current_host]['ansible_eth0']['ipv4']['address'] ~ ':' ~ port_api
+    ] }}"
+  delegate_to: "{{ current_host }}"
+  delegate_facts: true
+  when:
+  - service_node_name in hostvars[current_host]['elkf_services_elastic']

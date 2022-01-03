@@ -29,7 +29,6 @@
     elkf_services_kibana: []
     elkf_services_logstash: []
     elkf_services_filebeat: []
-    elkf_services_elastic_ports: []
 
 - name: Echo vars
   debug: "var=hostvars[inventory_hostname]['elkf_remaining_memory']"
@@ -52,7 +51,7 @@
   debug: "var=hostvars[inventory_hostname]['elkf_remaining_memory']"
 
 - name: Echo vars
-  debug: var=elkf_services_elastic_ports
+  debug: var=elkf_elastic_endpoints_discovery
 
 - name: Echo vars
-  debug: var=elkf_services_elastic
+  debug: var=elkf_services_elastic_ports
