@@ -15,6 +15,7 @@
   loop: "{{ range(count_elastic_nodes | int) | list | product(play_hosts) | list }}"
   vars:
     service_node_name: "{{ elkf_stack_nodename_prefix_elastic ~ item.0 }}"
+    service_node_index: "{{ item.0 }}"
     service_name: elastic
     current_host: "{{ item.1 }}"
 
@@ -24,6 +25,30 @@
   loop: "{{ range(count_elastic_nodes | int) | list }}"
   loop_control:
     loop_var: elastic_index
+
+- name: Calculate Elastic API & Discovery endpoints
+  set_fact:
+    elkf_services_elastic_ports: "{{ hostvars[current_host]['elkf_services_elastic_ports'] + [{
+      'node_name': elkf_stack_nodename_prefix_elastic ~ item.0,
+      'port_api': port_api,
+      'port_discovery': port_discovery
+    }] }}"
+    elkf_elastic_disc_temp: "{{ hostvars[current_host]['elkf_elastic_seeds_temp']|default([]) + [
+      hostvars[current_host]['ansible_eth0']['ipv4']['address'] ~ ':' ~ port_discovery
+    ] }}"
+    elkf_elastic_api_temp: "{{ hostvars[current_host]['elkf_elastic_api_temp']|default([]) + [
+      hostvars[current_host]['ansible_eth0']['ipv4']['address'] ~ ':' ~ port_api
+    ] }}"
+  loop: "{{ range(count_elastic_nodes | int) | list | product(play_hosts) | list }}"
+  when: service_node_name in hostvars[current_host]['elkf_services_elastic']
+  delegate_to: "{{ current_host }}"
+  delegate_facts: true
+  vars:
+    service_node_name: "{{ elkf_stack_nodename_prefix_elastic ~ item.0 }}"
+    service_node_index: "{{ item.0 }}"
+    current_host: "{{ item.1 }}"
+    port_discovery: "{{ elkf_stack_starting_ports_elastic_discovery + service_node_index }}"
+    port_api: "{{ elkf_stack_starting_ports_elastic_api + service_node_index }}"
 
 ############
 # KIBABA

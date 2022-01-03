@@ -20,11 +20,16 @@
     elkf_stack_nodename_prefix_filebeat: "{{ elkf_stack.nodename_prefix.filebeat | default(elkf_default_nodename_prefix.filebeat) }}"
     # host remaining memory
     elkf_remaining_memory: "{{ hostvars[inventory_hostname]['ansible_memfree_mb'] }}"
+    # starting ports
+    elkf_stack_starting_ports_elastic_api: "{{ elkf_stack.starting_ports.elastic.api | default(elkf_default_starting_ports.elasticsearch.api) }}"
+    elkf_stack_starting_ports_elastic_discovery: "{{ elkf_stack.starting_ports.elastic.discovery | default(elkf_default_starting_ports.elasticsearch.discovery) }}"
+    elkf_stack_starting_ports_kibana_web: "{{ elkf_stack.starting_ports.kibana.web | default(elkf_default_starting_ports.kibana.web) }}"
     # services
     elkf_services_elastic: []
     elkf_services_kibana: []
     elkf_services_logstash: []
     elkf_services_filebeat: []
+    elkf_services_elastic_ports: []
 
 - name: Echo vars
   debug: "var=hostvars[inventory_hostname]['elkf_remaining_memory']"
@@ -37,14 +42,17 @@
         - elkf_stack_cluster_name="{{ elkf_stack_cluster_name }}"
   register: docker_host_info
 
-- name: Calculate elastic endpoints
+- name: Find hosts for services & calc endpoints
   become: no
   connection: local
   run_once: true
-  import_tasks: calculate_endpoints.yml
+  import_tasks: find_place_for_services.yml
 
 - name: Echo vars
   debug: "var=hostvars[inventory_hostname]['elkf_remaining_memory']"
+
+- name: Echo vars
+  debug: var=elkf_services_elastic_ports
 
 - name: Echo vars
   debug: var=elkf_services_elastic
