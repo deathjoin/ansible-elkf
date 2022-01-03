@@ -1,22 +1,70 @@
 ---
-- name: Set remaining services to deploy
+- name: Find services count to deploy
   set_fact:
-    remaining_elastic_nodes: "{{ elastic | default(0) }}"
-    remaining_kibana_nodes: "{{ kibana | default(0) }}"
-    remaining_logstash_nodes: "{{ logstash | default(0) }}"
-    remaining_filebeat_nodes: "{{ filebeat | default(0) }}"
+    count_elastic_nodes: "{{ elastic | default(0) }}"
+    count_kibana_nodes: "{{ kibana | default(0) }}"
+    count_logstash_nodes: "{{ logstash | default(0) }}"
+    count_filebeat_nodes: "{{ filebeat | default(0) }}"
 
-# - name: Calc hosts all elastic nodes
-#   include_tasks: place_elastic.yml
-#   loop: "{{ range(remaining_elastic_nodes | int) | list }}"
-#   loop_control:
-#     loop_var: service_index
+- name: Find host for all elastic nodes
+  include_tasks: place_service.yml
+  loop: "{{ range(count_elastic_nodes | int) | list | product(play_hosts) | list }}"
+  vars:
+    service_node_name: "{{ elkf_stack_nodename_prefix_elastic ~ item.0 }}"
+    service_name: elastic
+    current_host: "{{ item.1 }}"
 
-- name: Calc hosts all elastic nodes
-  include_tasks: place_elastic.yml
-  loop: "{{ range(remaining_elastic_nodes | int) | list | product(play_hosts) | list }}"
+- name: Check all elastic nodes are present or scheduled to hosts
+  debug: msg="Checking {{ elkf_stack_nodename_prefix_elastic ~ elastic_index }}"
+  failed_when: elkf_stack_nodename_prefix_elastic ~ elastic_index not in (play_hosts | map('extract', hostvars) | map(attribute='elkf_services_elastic') | flatten )
+  loop: "{{ range(count_elastic_nodes | int) | list }}"
   loop_control:
-    loop_var: service
+    loop_var: elastic_index
+
+- name: Find host for all kibana nodes
+  include_tasks: place_service.yml
+  loop: "{{ range(count_kibana_nodes | int) | list | product(play_hosts) | list }}"
+  vars:
+    service_node_name: "{{ elkf_stack_nodename_prefix_kibana ~ item.0 }}"
+    service_name: kibana
+    current_host: "{{ item.1 }}"
+
+- name: Check all kibana nodes are present or scheduled to hosts
+  debug: msg="Checking {{ elkf_stack_nodename_prefix_kibana ~ kibana_index }}"
+  failed_when: elkf_stack_nodename_prefix_kibana ~ kibana_index not in (play_hosts | map('extract', hostvars) | map(attribute='elkf_services_kibana') | flatten )
+  loop: "{{ range(count_kibana_nodes | int) | list }}"
+  loop_control:
+    loop_var: kibana_index
+
+- name: Find host for all filebeat nodes
+  include_tasks: place_service.yml
+  loop: "{{ range(count_filebeat_nodes | int) | list | product(play_hosts) | list }}"
+  vars:
+    service_node_name: "{{ elkf_stack_nodename_prefix_filebeat ~ item.0 }}"
+    service_name: filebeat
+    current_host: "{{ item.1 }}"
+
+- name: Check all filebeat nodes are present or scheduled to hosts
+  debug: msg="Checking {{ elkf_stack_nodename_prefix_filebeat ~ filebeat_index }}"
+  failed_when: elkf_stack_nodename_prefix_filebeat ~ filebeat_index not in (play_hosts | map('extract', hostvars) | map(attribute='elkf_services_filebeat') | flatten )
+  loop: "{{ range(count_filebeat_nodes | int) | list }}"
+  loop_control:
+    loop_var: filebeat_index
+
+- name: Find host for all logstash nodes
+  include_tasks: place_service.yml
+  loop: "{{ range(count_logstash_nodes | int) | list | product(play_hosts) | list }}"
+  vars:
+    service_node_name: "{{ elkf_stack_nodename_prefix_logstash ~ item.0 }}"
+    service_name: logstash
+    current_host: "{{ item.1 }}"
+
+- name: Check all logstash nodes are present or scheduled to hosts
+  debug: msg="Checking {{ elkf_stack_nodename_prefix_logstash ~ logstash_index }}"
+  failed_when: elkf_stack_nodename_prefix_logstash ~ logstash_index not in (play_hosts | map('extract', hostvars) | map(attribute='elkf_services_logstash') | flatten )
+  loop: "{{ range(count_logstash_nodes | int) | list }}"
+  loop_control:
+    loop_var: logstash_index
 
 
 # ansible_memfree_mb

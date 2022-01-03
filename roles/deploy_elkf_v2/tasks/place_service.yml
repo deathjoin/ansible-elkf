@@ -1,0 +1,14 @@
+---
+- name: "Place {{ service_name|upper }} {{ service_node_name }} on {{ current_host }}"
+  set_fact: {
+    "{{ service_array }}": "{{ hostvars[current_host][service_array] + [service_node_name] }}",
+    "elkf_remaining_memory": "{{ hostvars[current_host]['elkf_remaining_memory']|int - service_memory|int }}"
+  }
+  delegate_to: "{{ current_host }}"
+  delegate_facts: true
+  when: 
+  - "hostvars[current_host]['elkf_remaining_memory']|int > service_memory|int"
+  - "service_node_name not in (play_hosts | map('extract', hostvars) | map(attribute=service_array) | flatten )"
+  vars:
+    service_memory: "{{ vars['elkf_stack_memory_' + service_name] }}"
+    service_array: "elkf_services_{{ service_name }}"

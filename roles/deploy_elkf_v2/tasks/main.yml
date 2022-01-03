@@ -4,12 +4,12 @@
     elkf_stack_version: "{{ elkf_stack.version | default(elkf_default_stack_version) }}"
     elkf_stack_cluster_name: "{{ elkf_stack.cluster_name | default(elkf_default_cluster_name) }}"
     # images
-    elkf_stack_image_elasticsearch: "{{ elkf_stack.images.elasticsearch | default(elfk_default_images.elasticsearch) }}"
+    elkf_stack_image_elastic: "{{ elkf_stack.images.elasticsearch | default(elfk_default_images.elasticsearch) }}"
     elkf_stack_image_kibana: "{{ elkf_stack.images.kibana | default(elfk_default_images.kibana) }}"
     elkf_stack_image_logstash: "{{ elkf_stack.images.logstash | default(elfk_default_images.logstash) }}"
     elkf_stack_image_filebeat: "{{ elkf_stack.images.filebeat | default(elfk_default_images.filebeat) }}"
     # memory
-    elkf_stack_memory_elasticsearch: "{{ elkf_stack.memory.elasticsearch | default(elkf_default_memory_mb.elasticsearch) }}"
+    elkf_stack_memory_elastic: "{{ elkf_stack.memory.elasticsearch | default(elkf_default_memory_mb.elasticsearch) }}"
     elkf_stack_memory_kibana: "{{ elkf_stack.memory.kibana | default(elkf_default_memory_mb.kibana) }}"
     elkf_stack_memory_logstash: "{{ elkf_stack.memory.logstash | default(elkf_default_memory_mb.logstash) }}"
     elkf_stack_memory_filebeat: "{{ elkf_stack.memory.filebeat | default(elkf_default_memory_mb.filebeat) }}"
@@ -28,6 +28,14 @@
 
 - name: Echo vars
   debug: "var=hostvars[inventory_hostname]['elkf_remaining_memory']"
+
+- name: Get docker info from play hosts
+  docker_host_info:
+    containers: yes
+    containers_filters:
+      label:
+        - elkf_stack_cluster_name="{{ elkf_stack_cluster_name }}"
+  register: docker_host_info
 
 - name: Calculate elastic endpoints
   become: no
