@@ -1,23 +1,35 @@
-elkf_default_stack_version: "7.7.0"
-elkf_default_cluster_name: "elkf_default_stack"
-elfk_default_images:
-  elasticsearch: docker.elastic.co/elasticsearch/elasticsearch
-  logstash: docker.elastic.co/logstash/logstash
-  kibana: docker.elastic.co/kibana/kibana
-  filebeat: docker.elastic.co/beats/filebeat
-elkf_default_memory_mb:
-  elasticsearch: 1024
-  kibana: 512
-  logstash: 512
-  filebeat: 512
-elkf_default_starting_ports:
-  elasticsearch:
-    api: 9200
-    discovery: 9300
-  kibana:
-    web: 5601
-elkf_default_nodename_prefix:
-  elasticsearch: "es-node-"
-  kibana: "kibana-"
-  logstash: "logstash-"
-  filebeat: "filebeat-"
+elkf_stack_version: "7.7.0"
+elkf_stack_cluster_name: "elkf_default_stack"
+
+# services count
+elastic: 0
+kibana: 0
+logstash: 0
+filebeat: 0
+count_elastic_nodes: "{{ elastic }}"
+count_kibana_nodes: "{{ kibana }}"
+count_filebeat_nodes: "{{ filebeat }}"
+count_logstash_nodes: "{{ logstash }}"
+
+# images
+elkf_stack_image_elastic: docker.elastic.co/elasticsearch/elasticsearch
+elkf_stack_image_logstash: docker.elastic.co/logstash/logstash
+elkf_stack_image_kibana: docker.elastic.co/kibana/kibana
+elkf_stack_image_filebeat: docker.elastic.co/beats/filebeat
+
+# memory
+elkf_stack_memory_elastic: 1024
+elkf_stack_memory_kibana: 512
+elkf_stack_memory_logstash: 512
+elkf_stack_memory_filebeat: 512
+
+# starting ports
+elkf_stack_starting_ports_elastic_api: 9200
+elkf_stack_starting_ports_elastic_discovery: 9300
+elkf_stack_starting_ports_kibana_web: 5601
+
+# nodename prefixes
+elkf_stack_nodename_prefix_elastic: "es-node-"
+elkf_stack_nodename_prefix_kibana: "kibana-"
+elkf_stack_nodename_prefix_logstash: "logstash-"
+elkf_stack_nodename_prefix_filebeat: "filebeat-"

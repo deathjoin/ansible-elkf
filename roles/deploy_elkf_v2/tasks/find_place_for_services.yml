@@ -1,11 +1,4 @@
 ---
-- name: Find services count to deploy
-  set_fact:
-    count_elastic_nodes: "{{ elastic | default(0) }}"
-    count_kibana_nodes: "{{ kibana | default(0) }}"
-    count_logstash_nodes: "{{ logstash | default(0) }}"
-    count_filebeat_nodes: "{{ filebeat | default(0) }}"
-
 ############
 # ELASTIC
 ############

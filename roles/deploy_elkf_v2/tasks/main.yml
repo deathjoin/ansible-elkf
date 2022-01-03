@@ -1,37 +1,16 @@
 ---
-- name: Set vars or defaults
+- name: Get available memory for each host (and set few defaults)
   set_fact:
-    elkf_stack_version: "{{ elkf_stack.version | default(elkf_default_stack_version) }}"
-    elkf_stack_cluster_name: "{{ elkf_stack.cluster_name | default(elkf_default_cluster_name) }}"
-    # images
-    elkf_stack_image_elastic: "{{ elkf_stack.images.elasticsearch | default(elfk_default_images.elasticsearch) }}"
-    elkf_stack_image_kibana: "{{ elkf_stack.images.kibana | default(elfk_default_images.kibana) }}"
-    elkf_stack_image_logstash: "{{ elkf_stack.images.logstash | default(elfk_default_images.logstash) }}"
-    elkf_stack_image_filebeat: "{{ elkf_stack.images.filebeat | default(elfk_default_images.filebeat) }}"
-    # memory
-    elkf_stack_memory_elastic: "{{ elkf_stack.memory.elasticsearch | default(elkf_default_memory_mb.elasticsearch) }}"
-    elkf_stack_memory_kibana: "{{ elkf_stack.memory.kibana | default(elkf_default_memory_mb.kibana) }}"
-    elkf_stack_memory_logstash: "{{ elkf_stack.memory.logstash | default(elkf_default_memory_mb.logstash) }}"
-    elkf_stack_memory_filebeat: "{{ elkf_stack.memory.filebeat | default(elkf_default_memory_mb.filebeat) }}"
-    # prefixes
-    elkf_stack_nodename_prefix_elastic: "{{ elkf_stack.nodename_prefix.elastic | default(elkf_default_nodename_prefix.elasticsearch) }}"
-    elkf_stack_nodename_prefix_kibana: "{{ elkf_stack.nodename_prefix.kibana | default(elkf_default_nodename_prefix.kibana) }}"
-    elkf_stack_nodename_prefix_logstash: "{{ elkf_stack.nodename_prefix.logstash | default(elkf_default_nodename_prefix.logstash) }}"
-    elkf_stack_nodename_prefix_filebeat: "{{ elkf_stack.nodename_prefix.filebeat | default(elkf_default_nodename_prefix.filebeat) }}"
     # host remaining memory
     elkf_remaining_memory: "{{ hostvars[inventory_hostname]['ansible_memfree_mb'] }}"
-    # starting ports
-    elkf_stack_starting_ports_elastic_api: "{{ elkf_stack.starting_ports.elastic.api | default(elkf_default_starting_ports.elasticsearch.api) }}"
-    elkf_stack_starting_ports_elastic_discovery: "{{ elkf_stack.starting_ports.elastic.discovery | default(elkf_default_starting_ports.elasticsearch.discovery) }}"
-    elkf_stack_starting_ports_kibana_web: "{{ elkf_stack.starting_ports.kibana.web | default(elkf_default_starting_ports.kibana.web) }}"
-    # services
+    # service nodes lists
     elkf_services_elastic: []
     elkf_services_kibana: []
     elkf_services_logstash: []
     elkf_services_filebeat: []
 
 - name: Echo vars
-  debug: "var=hostvars[inventory_hostname]['elkf_remaining_memory']"
+  debug: "var=elkf_remaining_memory"
 
 - name: Get docker info from play hosts
   docker_host_info:
@@ -48,7 +27,7 @@
   import_tasks: find_place_for_services.yml
 
 - name: Echo vars
-  debug: "var=hostvars[inventory_hostname]['elkf_remaining_memory']"
+  debug: "var=elkf_remaining_memory"
 
 - name: Echo vars
   debug: var=elkf_elastic_endpoints_discovery
