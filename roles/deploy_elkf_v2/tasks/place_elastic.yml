@@ -1,24 +1,13 @@
 ---
-# - name: "Place Elastic {{ elkf_stack_nodename_prefix_elastic ~ service_index }}"
-#   set_fact:
-#     elkf_services_elastic: "{{ elkf_services_elastic + [elkf_stack_nodename_prefix_elastic ~ service_index] }}"
-#     elkf_remaining_memory: "{{ elkf_remaining_memory|int - elkf_stack_memory_elasticsearch|int }}"
-#   delegate_to: "{{ cur_host }}"
-#   delegate_facts: true
-#   loop: "{{ play_hosts }}"
-#   loop_control:
-#     loop_var: cur_host
-#     index_var: cur_index
-#   when: 
-#   - "hostvars[cur_host]['elkf_remaining_memory']|int > elkf_stack_memory_elasticsearch|int"
-#   - "(elkf_stack_nodename_prefix_elastic ~ service_index) not in (play_hosts | map('extract', hostvars) | map(attribute='elkf_services_elastic') | flatten )"
+# item.0 — node index
+# item.1 — one of play host from inventory
 
-- name: "Place Elastic {{ elkf_stack_nodename_prefix_elastic ~ service.0 }} on {{ service.1 }}"
+- name: "Place Elastic {{ elkf_stack_nodename_prefix_elastic ~ item.0 }} on {{ item.1 }}"
   set_fact:
-    elkf_services_elastic: "{{ hostvars[service.1]['elkf_services_elastic'] + [elkf_stack_nodename_prefix_elastic ~ service.0] }}"
-    elkf_remaining_memory: "{{ hostvars[service.1]['elkf_remaining_memory']|int - elkf_stack_memory_elasticsearch|int }}"
-  delegate_to: "{{ service.1 }}"
+    elkf_services_elastic: "{{ hostvars[item.1]['elkf_services_elastic'] + [elkf_stack_nodename_prefix_elastic ~ item.0] }}"
+    elkf_remaining_memory: "{{ hostvars[item.1]['elkf_remaining_memory']|int - elkf_stack_memory_elasticsearch|int }}"
+  delegate_to: "{{ item.1 }}"
   delegate_facts: true
   when: 
-  - "hostvars[service.1]['elkf_remaining_memory']|int > elkf_stack_memory_elasticsearch|int"
-  - "(elkf_stack_nodename_prefix_elastic ~ service.0) not in (play_hosts | map('extract', hostvars) | map(attribute='elkf_services_elastic') | flatten )"
+  - "hostvars[item.1]['elkf_remaining_memory']|int > elkf_stack_memory_elasticsearch|int"
+  - "(elkf_stack_nodename_prefix_elastic ~ item.0) not in (play_hosts | map('extract', hostvars) | map(attribute='elkf_services_elastic') | flatten )"
