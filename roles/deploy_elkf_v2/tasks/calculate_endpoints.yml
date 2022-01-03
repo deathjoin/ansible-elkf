@@ -6,6 +6,10 @@
     count_logstash_nodes: "{{ logstash | default(0) }}"
     count_filebeat_nodes: "{{ filebeat | default(0) }}"
 
+############
+# ELASTIC
+############
+
 - name: Find host for all elastic nodes
   include_tasks: place_service.yml
   loop: "{{ range(count_elastic_nodes | int) | list | product(play_hosts) | list }}"
@@ -20,6 +24,10 @@
   loop: "{{ range(count_elastic_nodes | int) | list }}"
   loop_control:
     loop_var: elastic_index
+
+############
+# KIBABA
+############
 
 - name: Find host for all kibana nodes
   include_tasks: place_service.yml
@@ -36,6 +44,10 @@
   loop_control:
     loop_var: kibana_index
 
+############
+# FILEBEAT
+############
+
 - name: Find host for all filebeat nodes
   include_tasks: place_service.yml
   loop: "{{ range(count_filebeat_nodes | int) | list | product(play_hosts) | list }}"
@@ -50,6 +62,10 @@
   loop: "{{ range(count_filebeat_nodes | int) | list }}"
   loop_control:
     loop_var: filebeat_index
+
+############
+# LOGSTASH
+############
 
 - name: Find host for all logstash nodes
   include_tasks: place_service.yml
