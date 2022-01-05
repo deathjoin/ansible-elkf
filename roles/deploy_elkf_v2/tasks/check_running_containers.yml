@@ -1,0 +1,7 @@
+---
+- name: Add running container to host
+  set_fact: {
+    "{{ service_array }}": "{{ vars[service_array] + [container.Labels.elkf_stack_node_name] }}"
+  }
+  vars:
+    service_array: "{{ 'elkf_services_' + container.Labels.elkf_stack_service }}"

@@ -17,11 +17,20 @@
 
 - name: Get docker info from play hosts
   docker_host_info:
+    verbose_output: yes
     containers: yes
     containers_filters:
       label:
-        - elkf_stack_cluster_name="{{ elkf_stack_cluster_name }}"
+        - "elkf_stack_cluster_name={{ elkf_stack_cluster_name }}"
   register: docker_host_info
+
+# check for running cluster containers on host
+# so we can skip memory calculation and host placement for them
+- name: Check for running cluster containers
+  include_tasks: check_running_containers.yml
+  loop: "{{ docker_host_info.containers }}"
+  loop_control:
+    loop_var: container
 
 - name: Find hosts for services & calc endpoints
   become: no
