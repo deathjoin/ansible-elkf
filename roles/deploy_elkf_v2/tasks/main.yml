@@ -2,12 +2,15 @@
 - name: Get available memory for each host (and set few defaults)
   set_fact:
     # host remaining memory
-    elkf_remaining_memory: "{{ hostvars[inventory_hostname]['ansible_memfree_mb'] }}"
+    elkf_remaining_memory: "{{ ansible_memfree_mb }}"
     # service nodes lists
     elkf_services_elastic: []
     elkf_services_kibana: []
     elkf_services_logstash: []
     elkf_services_filebeat: []
+    elkf_elastic_disc_temp: []
+    elkf_elastic_api_temp: []
+    elkf_services_elastic_ports: []
 
 - name: Echo vars
   debug: "var=elkf_remaining_memory"

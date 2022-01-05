@@ -4,7 +4,7 @@
       'port_api': port_api,
       'port_discovery': port_discovery
     }] }}"
-    elkf_elastic_disc_temp: "{{ hostvars[current_host]['elkf_elastic_seeds_temp']|default([]) + [
+    elkf_elastic_disc_temp: "{{ hostvars[current_host]['elkf_elastic_disc_temp']|default([]) + [
       hostvars[current_host]['ansible_eth0']['ipv4']['address'] ~ ':' ~ port_discovery
     ] }}"
     elkf_elastic_api_temp: "{{ hostvars[current_host]['elkf_elastic_api_temp']|default([]) + [
