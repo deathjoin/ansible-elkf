@@ -21,3 +21,8 @@
 ```bash
 ansible-playbook -i environments/prod -e "elastic=2 kibana=1"  playbooks/install-elkf.yml 
 ```
+
+```bash
+# запуск с количеством контейнеров 0 (по-умолчанию) удалит все контейнеры кластера с хостов
+ansible-playbook -i environments/prod playbooks/install-elkf.yml
+```
