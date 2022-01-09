@@ -61,3 +61,13 @@
   when: 
   - container.Labels.elkf_stack_node_name not in elkf_services_elastic_ports | map(attribute='node_name')
   - container.Labels.elkf_stack_service == 'elastic'
+
+- name: "Healthchech ELKF: ElasticSearch"
+  docker_container_info:
+    name: "{{ first_es_node_name }}"
+  register: result
+  until: result.container.State.Health.Status == 'healthy'
+  retries: 5
+  delay: 10
+  vars:
+    first_es_node_name: "{{ elkf_services_elastic_ports | map(attribute='node_name') | first }}"
