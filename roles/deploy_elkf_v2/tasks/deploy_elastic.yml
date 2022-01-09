@@ -1,0 +1,47 @@
+---
+- name: "Pull ElasticSearch image: {{ elkf_stack_version }}"
+  docker_image:
+    name: "{{ elkf_stack_image_elastic }}"
+    tag: "{{ elkf_stack_version }}"
+    source: pull
+
+- name: Start ElasticSearch containers
+  docker_container: 
+    name: "{{ es_container.node_name }}"
+    image: "{{ elkf_stack_image_elastic }}:{{ elkf_stack_version }}"
+    ports:
+      - "{{ es_container.port_api }}:9200"
+      - "{{ es_container.port_discovery }}:9300"
+    labels:
+      elkf_stack_cluster_name: "{{ elkf_stack_cluster_name }}"
+      elkf_stack_node_name: "{{ es_container.node_name }}"
+      elkf_stack_service: elastic
+    healthcheck:
+      start_period: 30s
+      retries: 5
+      timeout: 10s
+      interval: 30s
+      test: 'curl --silent --fail localhost:9200/_cluster/health?wait_for_status=green&timeout=1s || exit 1'
+    env:
+      ES_JAVA_OPTS: "-Xms{{ elkf_stack_memory_elastic }}m -Xmx{{ elkf_stack_memory_elastic }}m"
+      # names
+      "cluster.name": "{{ elkf_stack_cluster_name }}"
+      "node.name": "{{ es_container.node_name }}"
+      # discovery & masters
+      "discovery.seed_hosts": "{{ current_seed_hosts }}"
+      "cluster.initial_master_nodes": "{{ elkf_elastic_node_names| join(',') }}"
+      # network options
+      "network.host": "0.0.0.0"
+      "network.bind_host": "0.0.0.0"
+      "network.publish_host": "{{ current_host_ip }}"
+      "transport.publish_port": "{{ es_container.port_discovery }}"
+      # disable xpack for now
+      "xpack.monitoring.enabled": "false"
+  loop: "{{ elkf_services_elastic_ports }}"
+  loop_control:
+    loop_var: es_container
+  vars:
+    current_host_ip: "{{ ansible_eth0.ipv4.address }}"
+    current_es_node_ip_port: "{{ current_host_ip }}:{{ es_container.port_discovery }}"
+    # list of all elastic endpoints minus current node for discovery
+    current_seed_hosts: "{{ elkf_elastic_endpoints_discovery | reject('equalto', current_es_node_ip_port) | join(',') }}"

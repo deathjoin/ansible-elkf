@@ -14,3 +14,8 @@
   delegate_facts: true
   when:
   - service_node_name in hostvars[current_host]['elkf_services_elastic']
+
+- set_fact:
+    elkf_elastic_node_names: "{{ hostvars[current_host]['elkf_elastic_node_names'] + [service_node_name] }}"
+  delegate_to: "{{ current_host }}"
+  delegate_facts: true
