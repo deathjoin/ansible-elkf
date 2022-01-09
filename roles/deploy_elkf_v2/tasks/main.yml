@@ -51,6 +51,9 @@
 - name: Deploy Elastic
   include_tasks: deployment/deploy_elastic.yml
 
+- name: Deploy Kibana
+  include_tasks: deployment/deploy_kibana.yml
+
 - name: Remove excess Elastic containers
   docker_container:
     state: absent
@@ -71,3 +74,4 @@
   delay: 10
   vars:
     first_es_node_name: "{{ elkf_services_elastic_ports | map(attribute='node_name') | first }}"
+  when: elkf_services_elastic_ports | map(attribute='node_name') != []
