@@ -50,3 +50,14 @@
 
 - name: Deploy Elastic
   include_tasks: deployment/deploy_elastic.yml
+
+- name: Remove excess Elastic containers
+  docker_container:
+    state: absent
+    name: "{{ container.Labels.elkf_stack_node_name }}"
+  loop: "{{ docker_host_info.containers }}"
+  loop_control:
+    loop_var: container
+  when: 
+  - container.Labels.elkf_stack_node_name not in elkf_services_elastic_ports | map(attribute='node_name')
+  - container.Labels.elkf_stack_service == 'elastic'
