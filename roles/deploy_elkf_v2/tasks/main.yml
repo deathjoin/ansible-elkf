@@ -28,7 +28,7 @@
 # check for running cluster containers on host
 # so we can skip memory calculation and host placement for them
 - name: Check for running cluster containers
-  include_tasks: check_running_containers.yml
+  include_tasks: preparation/check_running_containers.yml
   loop: "{{ docker_host_info.containers }}"
   loop_control:
     loop_var: container
@@ -37,7 +37,7 @@
   become: no
   connection: local
   run_once: true
-  import_tasks: find_place_for_services.yml
+  import_tasks: preparation/find_place_for_services.yml
 
 - name: Echo vars
   debug: "var=elkf_elastic_node_names"
@@ -49,4 +49,4 @@
   debug: var=elkf_services_elastic_ports
 
 - name: Deploy Elastic
-  include_tasks: deploy_elastic.yml
+  include_tasks: deployment/deploy_elastic.yml
