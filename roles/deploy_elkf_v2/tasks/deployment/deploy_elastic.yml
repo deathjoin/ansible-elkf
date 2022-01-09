@@ -36,7 +36,8 @@
       "network.publish_host": "{{ current_host_ip }}"
       "transport.publish_port": "{{ es_container.port_discovery }}"
       # disable xpack for now
-      "xpack.monitoring.enabled": "false"
+      "xpack.monitoring.enabled": "true"
+      "xpack.monitoring.collection.enabled": "true"
   loop: "{{ elkf_services_elastic_ports }}"
   loop_control:
     loop_var: es_container
