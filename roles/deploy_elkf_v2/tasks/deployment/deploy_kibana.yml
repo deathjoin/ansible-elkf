@@ -7,24 +7,24 @@
 
 - name: "Start Kibana containers"
   docker_container:
-    name: "{{ kibana_container_node_name }}"
+    name: "{{ kibana_container.node_name }}"
     image: "{{ elkf_stack_image_kibana }}:{{ elkf_stack_version }}"
     ports: 
-      - "5601:5601"
+      - "{{ kibana_container.port_web }}:5601"
     labels:
       elkf_stack_cluster_name: "{{ elkf_stack_cluster_name }}"
-      elkf_stack_node_name: "{{ kibana_container_node_name }}"
+      elkf_stack_node_name: "{{ kibana_container.node_name }}"
       elkf_stack_service: kibana
     env:
       # names
-      "SERVER_NAME": "{{ kibana_container_node_name }}"
+      "SERVER_NAME": "{{ kibana_container.node_name }}"
       # discovery
       "ELASTICSEARCH_HOSTS": "{{ elastic_search_hosts | to_json(separators=(',',':')) }}"
       # network options
       "SERVER_HOST": "0.0.0.0"
       "SERVER_PORT": "5601"
-  loop: "{{ elkf_services_kibana }}"
+  loop: "{{ elkf_services_kibana_ports }}"
   loop_control:
-    loop_var: kibana_container_node_name
+    loop_var: kibana_container
   vars:
     elastic_search_hosts: "{{ ['http://']|product(elkf_elastic_endpoints_api)| map('join') }}"

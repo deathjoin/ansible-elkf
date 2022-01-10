@@ -56,6 +56,15 @@
   loop_control:
     loop_var: kibana_index
 
+- name: Calculate Kibana web endpoints
+  include_tasks: calculate_kibana_endpoints.yml
+  loop: "{{ range(count_kibana_nodes | int) | list | product(play_hosts) | list }}"
+  vars:
+    service_node_name: "{{ elkf_stack_nodename_prefix_kibana ~ item.0 }}"
+    current_host: "{{ item.1 }}"
+    service_node_index: "{{ item.0 }}"
+    port_web: "{{ elkf_stack_starting_ports_kibana_web|int +  service_node_index|int }}"
+
 ############
 # FILEBEAT
 ############

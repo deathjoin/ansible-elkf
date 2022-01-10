@@ -1,0 +1,10 @@
+---
+- set_fact:
+    elkf_services_kibana_ports: "{{ hostvars[current_host]['elkf_services_kibana_ports'] + [{
+      'node_name': service_node_name,
+      'port_web': port_web
+    }] }}"
+  delegate_facts: true
+  delegate_to: "{{ current_host }}"
+  when:
+  - service_node_name in hostvars[current_host]['elkf_services_kibana']

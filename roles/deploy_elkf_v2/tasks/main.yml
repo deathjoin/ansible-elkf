@@ -11,6 +11,7 @@
     elkf_elastic_disc_temp: []
     elkf_elastic_api_temp: []
     elkf_services_elastic_ports: []
+    elkf_services_kibana_ports: []
     elkf_elastic_node_names: []
 
 - name: Echo vars
@@ -46,7 +47,7 @@
   debug: var=elkf_elastic_endpoints_discovery
 
 - name: Echo vars
-  debug: var=elkf_services_elastic_ports
+  debug: var=elkf_services_kibana_ports
 
 - name: Deploy Elastic
   include_tasks: deployment/deploy_elastic.yml
@@ -54,7 +55,7 @@
 - name: Deploy Kibana
   include_tasks: deployment/deploy_kibana.yml
 
-- name: Remove excess Elastic containers
+- name: Remove excess containers
   docker_container:
     state: absent
     name: "{{ container.Labels.elkf_stack_node_name }}"
@@ -62,8 +63,9 @@
   loop_control:
     loop_var: container
   when: 
-  - container.Labels.elkf_stack_node_name not in elkf_services_elastic_ports | map(attribute='node_name')
-  - container.Labels.elkf_stack_service == 'elastic'
+  - container.Labels.elkf_stack_node_name not in service_containers
+  vars:
+    service_containers: "{{ vars['elkf_services_' + container.Labels.elkf_stack_service + '_ports'] | map(attribute='node_name') }}"
 
 - name: "Healthchech ELKF: ElasticSearch"
   docker_container_info:
