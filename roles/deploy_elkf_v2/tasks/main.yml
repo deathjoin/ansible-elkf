@@ -16,9 +16,6 @@
     elkf_services_logstash_ports: []
     elkf_elastic_node_names: []
 
-- name: Echo vars
-  debug: "var=elkf_remaining_memory"
-
 - name: Get docker info from play hosts
   docker_host_info:
     verbose_output: yes
@@ -41,15 +38,6 @@
   connection: local
   run_once: true
   import_tasks: preparation/find_hosts_for_services.yml
-
-- name: Echo vars
-  debug: "var=elkf_elastic_node_names"
-
-- name: Echo vars
-  debug: var=elkf_services_filebeat_ports
-
-- name: Echo vars
-  debug: var=elkf_services_logstash_ports
 
 - name: Deploy Elastic
   include_tasks: deployment/deploy_elastic.yml
