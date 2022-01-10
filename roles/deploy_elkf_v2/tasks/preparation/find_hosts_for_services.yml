@@ -4,7 +4,7 @@
 ############
 
 - name: Find host for all elastic nodes
-  include_tasks: place_service.yml
+  include_tasks: place_service_on_host.yml
   loop: "{{ range(count_elastic_nodes | int) | list | product(play_hosts) | list }}"
   vars:
     service_node_name: "{{ elkf_stack_nodename_prefix_elastic ~ item.0 }}"
@@ -42,7 +42,7 @@
 ############
 
 - name: Find host for all kibana nodes
-  include_tasks: place_service.yml
+  include_tasks: place_service_on_host.yml
   loop: "{{ range(count_kibana_nodes | int) | list | product(play_hosts) | list }}"
   vars:
     service_node_name: "{{ elkf_stack_nodename_prefix_kibana ~ item.0 }}"
@@ -70,7 +70,7 @@
 ############
 
 - name: Find host for all filebeat nodes
-  include_tasks: place_service.yml
+  include_tasks: place_service_on_host.yml
   loop: "{{ range(count_filebeat_nodes | int) | list | product(play_hosts) | list }}"
   vars:
     service_node_name: "{{ elkf_stack_nodename_prefix_filebeat ~ item.0 }}"
@@ -97,7 +97,7 @@
 ############
 
 - name: Find host for all logstash nodes
-  include_tasks: place_service.yml
+  include_tasks: place_service_on_host.yml
   loop: "{{ range(count_logstash_nodes | int) | list | product(play_hosts) | list }}"
   vars:
     service_node_name: "{{ elkf_stack_nodename_prefix_logstash ~ item.0 }}"
