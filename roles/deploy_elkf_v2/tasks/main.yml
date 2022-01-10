@@ -12,6 +12,8 @@
     elkf_elastic_api_temp: []
     elkf_services_elastic_ports: []
     elkf_services_kibana_ports: []
+    elkf_services_filebeat_ports: []
+    elkf_services_logstash_ports: []
     elkf_elastic_node_names: []
 
 - name: Echo vars
@@ -44,16 +46,22 @@
   debug: "var=elkf_elastic_node_names"
 
 - name: Echo vars
-  debug: var=elkf_elastic_endpoints_discovery
+  debug: var=elkf_services_filebeat_ports
 
 - name: Echo vars
-  debug: var=elkf_services_kibana_ports
+  debug: var=elkf_services_logstash_ports
 
 - name: Deploy Elastic
   include_tasks: deployment/deploy_elastic.yml
 
 - name: Deploy Kibana
   include_tasks: deployment/deploy_kibana.yml
+
+- name: Deploy Logstash
+  include_tasks: deployment/deploy_logstash.yml
+
+- name: Deploy Filebeat
+  include_tasks: deployment/deploy_filebeat.yml
 
 - name: Remove excess containers
   docker_container:

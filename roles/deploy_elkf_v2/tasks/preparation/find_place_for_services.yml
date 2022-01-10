@@ -84,6 +84,14 @@
   loop_control:
     loop_var: filebeat_index
 
+- name: Calculate filebeat endpoints
+  include_tasks: calculate_filebeat_endpoints.yml
+  loop: "{{ range(count_filebeat_nodes | int) | list | product(play_hosts) | list }}"
+  vars:
+    service_node_name: "{{ elkf_stack_nodename_prefix_filebeat ~ item.0 }}"
+    current_host: "{{ item.1 }}"
+    service_node_index: "{{ item.0 }}"
+
 ############
 # LOGSTASH
 ############
@@ -102,6 +110,14 @@
   loop: "{{ range(count_logstash_nodes | int) | list }}"
   loop_control:
     loop_var: logstash_index
+
+- name: Calculate logstash endpoints
+  include_tasks: calculate_logstash_endpoints.yml
+  loop: "{{ range(count_logstash_nodes | int) | list | product(play_hosts) | list }}"
+  vars:
+    service_node_name: "{{ elkf_stack_nodename_prefix_logstash ~ item.0 }}"
+    current_host: "{{ item.1 }}"
+    service_node_index: "{{ item.0 }}"
 
 
 # ansible_memfree_mb

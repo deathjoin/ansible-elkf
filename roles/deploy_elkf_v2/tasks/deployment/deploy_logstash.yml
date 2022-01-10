@@ -1,0 +1,18 @@
+---
+- name: "Pull Logstash image: {{ elkf_stack_version }}"
+  docker_image:
+    name: "{{ elkf_stack_image_logstash }}"
+    tag: "{{ elkf_stack_version }}"
+    source: pull
+
+- name: "Start logstash containers"
+  docker_container:
+    name: "{{ logstash_container.node_name }}"
+    image: "{{ elkf_stack_image_logstash }}:{{ elkf_stack_version }}"
+    labels:
+      elkf_stack_cluster_name: "{{ elkf_stack_cluster_name }}"
+      elkf_stack_node_name: "{{ logstash_container.node_name }}"
+      elkf_stack_service: logstash
+  loop: "{{ elkf_services_logstash_ports }}"
+  loop_control:
+    loop_var: logstash_container

@@ -1,0 +1,8 @@
+- set_fact:
+    elkf_services_filebeat_ports: "{{ hostvars[current_host]['elkf_services_filebeat_ports'] + [{
+      'node_name': service_node_name
+    }] }}"
+  delegate_facts: true
+  delegate_to: "{{ current_host }}"
+  when:
+  - service_node_name in hostvars[current_host]['elkf_services_filebeat']
