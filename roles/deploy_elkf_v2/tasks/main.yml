@@ -40,7 +40,7 @@
   become: no
   connection: local
   run_once: true
-  import_tasks: preparation/find_place_for_services.yml
+  import_tasks: preparation/find_hosts_for_services.yml
 
 - name: Echo vars
   debug: "var=elkf_elastic_node_names"

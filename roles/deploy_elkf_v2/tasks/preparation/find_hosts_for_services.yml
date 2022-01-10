@@ -20,7 +20,7 @@
     loop_var: elastic_index
 
 - name: Calculate Elastic API & Discovery ports
-  include_tasks: calculate_endpoints.yml
+  include_tasks: calculate_elastic_endpoints.yml
   loop: "{{ range(count_elastic_nodes | int) | list | product(play_hosts) | list }}"
   vars:
     service_node_name: "{{ elkf_stack_nodename_prefix_elastic ~ item.0 }}"
